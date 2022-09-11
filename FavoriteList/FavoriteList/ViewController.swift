@@ -8,7 +8,7 @@
 import UIKit
 
 // MARK: - ViewController class
-class ViewController: UIViewController, UITableViewDataSource {
+class ViewController: UIViewController {
     
     // MARK: - Private propertie
     private let table: UITableView = {
@@ -63,13 +63,20 @@ class ViewController: UIViewController, UITableViewDataSource {
                       return
                   }
             let movie = Movie(title: movieTitle, year: yearMovie)
-            self?.items.append(movie)
-            self?.table.reloadData()
+            guard let filter = self?.items.filter({ $0 == movie }), filter.count == 0 else { return }
+            guard let strongSelf = self else { return }
+            strongSelf.items.append(movie)
+            let indexPath = IndexPath(row: strongSelf.items.count-1, section: 0)
+            strongSelf.table.beginUpdates()
+            strongSelf.table.insertRows(at: [indexPath], with: .automatic)
+            strongSelf.table.endUpdates()
         }))
         present(alert, animated: true)
     }
-    
-    // MARK: - Table view data source methods
+}
+
+// MARK: - UITableViewDataSource
+extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
     }
@@ -80,11 +87,13 @@ class ViewController: UIViewController, UITableViewDataSource {
         return cell
     }
     
-    // MARK: - Data source methods to implement for Delete actions
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
-    
+}
+
+// MARK: - UITableViewDelegate
+extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             tableView.beginUpdates()
@@ -94,4 +103,3 @@ class ViewController: UIViewController, UITableViewDataSource {
         }
     }
 }
-

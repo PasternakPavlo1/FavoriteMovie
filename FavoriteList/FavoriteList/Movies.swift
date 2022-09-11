@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - Movie class
-class Movie {
+class Movie: Equatable {
     let title: String
     let year: String
     
@@ -16,5 +16,10 @@ class Movie {
     init(title: String, year: String) {
         self.title = title
         self.year = year
+    }
+    
+    static func ==(lhs: Movie, rhs: Movie) -> Bool {
+        lhs.title == rhs.title &&
+        lhs.year == rhs.year
     }
 }
